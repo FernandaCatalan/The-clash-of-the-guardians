@@ -20,6 +20,10 @@ typedef struct Jugador {
 } Jugador;
 
 //Struct para representar una entrada en el historial
+typedef struct HistorialEntry {
+    char accion[100];
+    struct HistorialEntry* next;
+} HistorialEntry;
 
 //Función para crear una carta
 Carta* crearCarta(const char* nombre, const char* tipo, int vidac, int ataque, int defensa) {
@@ -71,7 +75,33 @@ void eliminarCartaPorIndice(Carta** lista, int indice) {
     }
 }
 
-// Función para imprimir una lista de cartas
+//Función para contar las cartas en una lista
+int contarCartas(Carta* lista) {
+    int contador = 0;
+    while (lista != NULL) {
+        contador++;
+        lista = lista->next;
+    }
+    return contador;
+}
+
+//Función para obtener una carta por índice
+Carta* obtenerCartaPorIndice(Carta* lista, int indice) {
+    int i = 0;
+    while (lista != NULL) {
+        if (i == indice) {
+            return lista;
+        }
+        lista = lista->next;
+        i++;
+    }
+    return NULL;
+}
+
+//Función para jugar una carta de la mano y eliminarla de la lista de cartas en mano
+
+
+//Función para imprimir una lista de cartas
 void imprimirCartas(Carta* lista) {
     int i = 1;
     while (lista != NULL) {
@@ -81,11 +111,37 @@ void imprimirCartas(Carta* lista) {
     }
 }
 
-// Función para liberar la memoria de una lista de cartas
+//Función para liberar la memoria de una lista de cartas
 void liberarCartas(Carta** lista) {
     while (*lista != NULL) {
         Carta* temp = *lista;
         *lista = (*lista)->next;
+        free(temp);
+    }
+}
+
+//Función para agregar una entrada al historial de la partida
+void agregarAlHistorial(HistorialEntry** historial, const char* accion) {
+    HistorialEntry* nuevaEntrada = (HistorialEntry*)malloc(sizeof(HistorialEntry));
+    strcpy(nuevaEntrada->accion, accion);
+    nuevaEntrada->next = *historial;
+    *historial = nuevaEntrada;
+}
+
+//Función para imprimir el historial de la partida
+void imprimirHistorial(HistorialEntry* historial) {
+    printf("Historial de la partida:\n");
+    while (historial != NULL) {
+        printf("%s\n", historial->accion);
+        historial = historial->next;
+    }
+}
+
+//Función para liberar la memoria del historial de la partida
+void liberarHistorial(HistorialEntry** historial) {
+    while (*historial != NULL) {
+        HistorialEntry* temp = *historial;
+        *historial = (*historial)->next;
         free(temp);
     }
 }
