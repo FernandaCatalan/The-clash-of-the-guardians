@@ -19,6 +19,77 @@ typedef struct Jugador {
     int vida;
 } Jugador;
 
+//Struct para representar una entrada en el historial
+
+//Función para crear una carta
+Carta* crearCarta(const char* nombre, const char* tipo, int vidac, int ataque, int defensa) {
+    Carta* nuevaCarta = (Carta*)malloc(sizeof(Carta));
+    strcpy(nuevaCarta->nombre, nombre);
+    strcpy(nuevaCarta->tipo, tipo);
+    nuevaCarta->vidac = vidac;
+    nuevaCarta->ataque = ataque;
+    nuevaCarta->defensa = defensa;
+    nuevaCarta->next = NULL;
+    return nuevaCarta;
+}
+
+//Función para agregar una carta a la lista
+void agregarCarta(Carta** lista, Carta* nuevaCarta) {
+    if (*lista == NULL) {
+        *lista = nuevaCarta;
+    } else {
+        Carta* temp = *lista;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = nuevaCarta;
+    }
+}
+
+//Función para eliminar una carta por índice
+void eliminarCartaPorIndice(Carta** lista, int indice) {
+    if (indice < 0) {
+        return;
+    }
+    if (indice == 0) {
+        Carta* temp = *lista;
+        *lista = (*lista)->next;
+        free(temp);
+    } else {
+        Carta* temp = *lista;
+        int i = 0;
+        while (temp != NULL && i < indice - 1) {
+            temp = temp->next;
+            i++;
+        }
+        if (temp == NULL || temp->next == NULL) {
+            return;
+        }
+        Carta* siguiente = temp->next->next;
+        free(temp->next);
+        temp->next = siguiente;
+    }
+}
+
+// Función para imprimir una lista de cartas
+void imprimirCartas(Carta* lista) {
+    int i = 1;
+    while (lista != NULL) {
+        printf("%d. Nombre: %s, Tipo: %s, Vida: %d, Ataque: %d, Defensa: %d\n", i, lista->nombre, lista->tipo, lista->vidac, lista->ataque, lista->defensa);
+        lista = lista->next;
+        i++;
+    }
+}
+
+// Función para liberar la memoria de una lista de cartas
+void liberarCartas(Carta** lista) {
+    while (*lista != NULL) {
+        Carta* temp = *lista;
+        *lista = (*lista)->next;
+        free(temp);
+    }
+}
+
 int main() {
     int opcion;
     //Crear un jugador con nombre y vida
@@ -78,6 +149,9 @@ int main() {
         }
 
     }while(opcion != 4);
+
+    // Liberar memoria de las cartas restantes
+    liberarCartas(&listaCartas);
 
     return 0;
 }
