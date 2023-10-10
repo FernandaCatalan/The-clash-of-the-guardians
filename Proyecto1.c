@@ -99,7 +99,13 @@ Carta* obtenerCartaPorIndice(Carta* lista, int indice) {
 }
 
 //Función para jugar una carta de la mano y eliminarla de la lista de cartas en mano
-
+Carta* jugarCarta(Carta** lista, int indice) {
+    Carta* carta = obtenerCartaPorIndice(*lista, indice - 1);
+    if (carta != NULL) {
+        eliminarCartaPorIndice(lista, indice - 1);
+    }
+    return carta;
+}
 
 //Función para imprimir una lista de cartas
 void imprimirCartas(Carta* lista) {
@@ -146,8 +152,53 @@ void liberarHistorial(HistorialEntry** historial) {
     }
 }
 
+//Función para repartir cartas al jugador y dejar el resto en la mesa
+void repartirCartas(Carta** listaTodasCartas, Carta** listaManoJugador, Carta** listaMesa){
+    srand(time(NULL));
+
+    //Inicializar listas de manoJugador y listaMesa
+    *listaManoJugador = NULL;
+    *listaMesa = NULL;
+
+    int numCartasDisponibles = contarCartas(listaTodasCartas);
+    int numCartasEnMano = 0;
+
+    //Darle al jugador las 15 cartas
+    while (numCartasEnMano < 15 && numCartasDisponibles > 0) {
+        int cartaAleatoria = rand() % numCartasDisponibles;
+        Carta* cartaElegida = obtenerCartaPorIndice(*listaTodasCartas, cartaAleatoria);
+
+        //Mover la carta elegida a la mano del jugador
+        agregarCarta(listaManoJugador, cartaElegida);
+
+        //Eliminar la carta elegida de la lista de todas las cartas
+        eliminarCartaPorIndice(listaTodasCartas, cartaAleatoria);
+
+        numCartasEnMano++;
+        numCartasDisponibles--;
+    }
+
+    //Permitir al jugador elegir 3 cartas de las 15 para mantener en la mano
+    printf("Seleccione 3 cartas para mantener en la mano:\n");
+    for (int i = 0; i < 3; i++) {
+        printf("Carta %d: ", i + 1);
+        int opcionCarta;
+        do {
+            scanf("%d", &opcionCarta);
+        } while (opcionCarta < 1 || opcionCarta > 15);
+
+        //Mover la carta seleccionada de la mano a la mesa
+        Carta* cartaSeleccionada = jugarCarta(listaManoJugador, opcionCarta);
+        agregarCarta(listaMesa, cartaSeleccionada);
+    }
+    
+}
+
 int main() {
     int opcion;
+    Carta* listaCartas = NULL;
+    HistorialEntry* historialPartida = NULL;
+
     //Crear un jugador con nombre y vida
     Jugador jugador;
     strcpy(jugador.nombre, "Messi");
@@ -156,30 +207,55 @@ int main() {
     //Leer las cartas desde el archivo "file.txt" y almacernarlas en una lista
     FILE* archivoCartas = fopen("file.txt", "r");
     if(archivoCartas == NULL) {
-        printf("No se pudo abrir el archivo.\n");
+        printf("No se pudo abrir el archivo\n");
         return 1;
+    }
+
+    char nombre[50];
+    char tipo[50];
+    int vidac, ataque, defensa;
+
+    while (fscanf(archivoCartas, " %49[^,], %49[^,], %d, %d, %d\n", nombre, tipo, &vidac, &ataque, &defensa) == 5) {
+        Carta* nuevaCarta = crearCarta(nombre, tipo, vidac, ataque, defensa);
+        agregarCarta(&listaCartas, nuevaCarta);
     }
 
     fclose(archivoCartas);
 
     do {
-        printf("\nMenú:\n");
+        printf("\nBienvenido a The clash of the guardians:\n");
+        printf("Escoge que deseas hacer: \n");
         printf("1. Crear una nueva carta\n");
-        printf("2. Jugar (Usuario vs. Máquina)\n");
+        printf("2. Jugar (Usuario vs. Maquina)\n");
         printf("3. Imprimir historial de la partida\n");
         printf("4. Salir\n");
-        printf("Seleccione una opción: ");
         scanf("%d", &opcion);    
 
         switch (opcion)
         {
             case 1:
                 //Solicitar al usuario ingresar los datos de la nueva carta
-            
+                printf("Ingrese el nombre de la carta: ");
+                scanf(" %49s", nombre);
+
+                printf("Ingrese el tipo de la carta: ");
+                scanf(" %49s", tipo);
+
+                printf("Ingrese los puntos de vida de la carta: ");
+                scanf("%d", &vidac);
+
+                printf("Ingrese los puntos de ataque de la carta: ");
+                scanf("%d", &ataque);
+
+                printf("Ingrese los puntos de defensa de la carta: ");
+                scanf("%d", &defensa);
+
                 //Crear la nueva carta
+                Carta* nuevaCarta = crearCarta(nombre, tipo, vidac, ataque, defensa);
 
                 //Agregar la nueva carta a la lista del file.txt
-            
+                agregarCarta(&listaCartas, nuevaCarta);
+                
                 printf("Nueva carta creada con exito\n");
                 break;
         
@@ -195,7 +271,7 @@ int main() {
                 break;
 
             case 4:
-                printf("¡Hata pronto, %s!\n", jugador.nombre);
+                printf("¡Hasta pronto, %s!\n", jugador.nombre);
                 break;
         
             default:
