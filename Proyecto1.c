@@ -302,9 +302,64 @@ int main() {
                 break;
         
             case 2:
-                //Repartir las cartas
+                //Repartir cartas al jugador y dejar el resto en la mesa al inicio
+                repartirCartas(&listaCartas, &manoJugador, &mesa);
 
-                //Juego
+                printf("Comienza el juego: %s vs. Maquina\n", jugador.nombre);
+
+                int turno = 0; //0 para turno del jugador, 1 para turno de la máquina
+                while (1) {
+                    if (turno == 0) {
+                        //Turno del jugador
+                        printf("\nTurno de %s. Cartas en la mano:\n", jugador.nombre);
+                        imprimirCartas(manoJugador);
+
+                        //El jugador decide si toma una carta de la mesa
+                        tomarCartaDeMesa(&manoJugador, &mesa);
+
+                        //El jugador elige una carta para jugar
+                        int opcionCarta;
+                        do {
+                            printf("Seleccione una carta para jugar (1-%d): ", contarCartas(manoJugador));
+                            scanf("%d", &opcionCarta);
+                        } while (opcionCarta < 1 || opcionCarta > contarCartas(manoJugador));
+
+                        //El jugador juega la carta seleccionada
+                        Carta* cartaJugada = jugarCarta(&manoJugador, opcionCarta);
+                        printf("%s juega la carta: %s\n", jugador.nombre, cartaJugada->nombre);
+
+                        //La máquina juega su turno
+                        turnoMaquina(manoJugador, &manoMaquina, &historialPartida);
+                    } else {
+                        //Turno de la máquina
+                        printf("\nTurno de la maquina.\n");
+                        turnoMaquina(manoJugador, &manoMaquina, &historialPartida);
+                    }
+
+                    //Verificar si hay un ganador o continuar
+                    if (contarCartas(manoJugador) == 0 || contarCartas(manoMaquina) == 0) {
+                        printf("Fin del juego.\n");
+
+                        if (contarCartas(manoJugador) == 0) {
+                            printf("¡La maquina gana!\n");
+                        } else {
+                            printf("¡%s gana!\n", jugador.nombre);
+                        }
+
+                        //Mostrar el historial de la partida
+                        imprimirHistorial(historialPartida);
+
+                        //Liberar memoria de las manos y el historial
+                        liberarCartas(&manoJugador);
+                        liberarCartas(&manoMaquina);
+                        liberarCartas(&mesa);
+                        liberarHistorial(&historialPartida);
+                        break;
+                    }
+
+                    //Cambiar el turno
+                    turno = 1 - turno;
+                }
                 break;
 
             case 3:
@@ -325,7 +380,7 @@ int main() {
 
     }while(opcion != 4);
 
-    // Liberar memoria de las cartas restantes
+    //Liberar memoria de las cartas restantes
     liberarCartas(&listaCartas);
 
     return 0;
