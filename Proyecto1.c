@@ -194,6 +194,40 @@ void repartirCartas(Carta** listaTodasCartas, Carta** listaManoJugador, Carta** 
     
 }
 
+//Función para que el jugador tome una carta de la mesa
+void tomarCartaDeMesa(Carta** listaManoJugador, Carta** listaMesa) {
+    int numCartasEnMesa = contarCartas(*listaMesa);
+
+    if (numCartasEnMesa > 0) {
+        printf("Cartas en la mesa:\n");
+        imprimirCartas(*listaMesa);
+
+        int opcionCarta;
+        do {
+            printf("Seleccione una carta para tomar (1-%d) o ingrese 0 para no tomar ninguna: ", numCartasEnMesa);
+            scanf("%d", &opcionCarta);
+        } while (opcionCarta < 0 || opcionCarta > numCartasEnMesa);
+
+        if (opcionCarta > 0) {
+            Carta* cartaElegida = jugarCarta(listaMesa, opcionCarta);
+            agregarCarta(listaManoJugador, cartaElegida);
+        }
+    }
+}
+
+//Función para el turno de la máquina (jugada aleatoria)
+void turnoMaquina(Carta* manoJugador, Carta** listaManoMaquina, HistorialEntry** historial) {
+    int numCartasEnManoMaquina = contarCartas(*listaManoMaquina);
+    if (numCartasEnManoMaquina > 0) {
+        int cartaAleatoria = rand() % numCartasEnManoMaquina;
+        Carta* cartaJugada = jugarCarta(listaManoMaquina, cartaAleatoria + 1); // +1 porque el índice es 1-based
+        printf("La maquina juega la carta: %s\n", cartaJugada->nombre);
+        char accion[100];
+        sprintf(accion, "La maquina juega la carta: %s", cartaJugada->nombre);
+        agregarAlHistorial(historial, accion);
+    }
+}
+
 int main() {
     int opcion;
     Carta* listaCartas = NULL;
@@ -203,6 +237,14 @@ int main() {
     Jugador jugador;
     strcpy(jugador.nombre, "Messi");
     jugador.vida = 5;
+
+     //Declarar las variables de manoJugador y manoMaquina
+    Carta* manoJugador = NULL;
+    Carta* manoMaquina = NULL;
+
+    //Declarar variable mesa
+    Carta* mesa = NULL;
+
 
     //Leer las cartas desde el archivo "file.txt" y almacernarlas en una lista
     FILE* archivoCartas = fopen("file.txt", "r");
@@ -268,6 +310,7 @@ int main() {
             case 3:
                 //Imprimir historial
                 printf("Historial de la partida:\n");
+                imprimirHistorial(historialPartida);
                 break;
 
             case 4:
