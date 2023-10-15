@@ -58,3 +58,12 @@ Shogun,Mago,55,30,20
 Tartaglia,Bestia,60,35,25
 Thoma,Vikingo,55,20,20
 Tignari,Mago,60,20,30
+
+
+
+
+
+
+
+
+

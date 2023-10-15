@@ -1,31 +1,31 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
-//Struct para representar una carta
+// Estructura para representar una carta
 typedef struct Carta {
     char nombre[50];
     char tipo[50];
-    int ataque;
     int vidac;
+    int ataque;
     int defensa;
     struct Carta* next;
 } Carta;
 
-//Struct para representar un jugador
+// Estructura para representar un jugador
 typedef struct Jugador {
     char nombre[50];
     int vida;
 } Jugador;
 
-//Struct para representar una entrada en el historial
+// Estructura para representar una entrada en el historial
 typedef struct HistorialEntry {
     char accion[100];
     struct HistorialEntry* next;
 } HistorialEntry;
 
-//Función para crear una carta
+// Función para crear una carta
 Carta* crearCarta(const char* nombre, const char* tipo, int vidac, int ataque, int defensa) {
     Carta* nuevaCarta = (Carta*)malloc(sizeof(Carta));
     strcpy(nuevaCarta->nombre, nombre);
@@ -37,7 +37,7 @@ Carta* crearCarta(const char* nombre, const char* tipo, int vidac, int ataque, i
     return nuevaCarta;
 }
 
-//Función para agregar una carta a la lista
+// Función para agregar una carta a la lista
 void agregarCarta(Carta** lista, Carta* nuevaCarta) {
     if (*lista == NULL) {
         *lista = nuevaCarta;
@@ -50,7 +50,7 @@ void agregarCarta(Carta** lista, Carta* nuevaCarta) {
     }
 }
 
-//Función para eliminar una carta por índice
+// Función para eliminar una carta por índice
 void eliminarCartaPorIndice(Carta** lista, int indice) {
     if (indice < 0) {
         return;
@@ -75,7 +75,7 @@ void eliminarCartaPorIndice(Carta** lista, int indice) {
     }
 }
 
-//Función para contar las cartas en una lista
+// Función para contar las cartas en una lista
 int contarCartas(Carta* lista) {
     int contador = 0;
     while (lista != NULL) {
@@ -85,7 +85,7 @@ int contarCartas(Carta* lista) {
     return contador;
 }
 
-//Función para obtener una carta por índice
+// Función para obtener una carta por índice
 Carta* obtenerCartaPorIndice(Carta* lista, int indice) {
     int i = 0;
     while (lista != NULL) {
@@ -98,7 +98,7 @@ Carta* obtenerCartaPorIndice(Carta* lista, int indice) {
     return NULL;
 }
 
-//Función para jugar una carta de la mano y eliminarla de la lista de cartas en mano
+// Función para jugar una carta de la mano y eliminarla de la lista de cartas en mano
 Carta* jugarCarta(Carta** lista, int indice) {
     Carta* carta = obtenerCartaPorIndice(*lista, indice - 1);
     if (carta != NULL) {
@@ -107,7 +107,7 @@ Carta* jugarCarta(Carta** lista, int indice) {
     return carta;
 }
 
-//Función para imprimir una lista de cartas
+// Función para imprimir una lista de cartas
 void imprimirCartas(Carta* lista) {
     int i = 1;
     while (lista != NULL) {
@@ -117,7 +117,7 @@ void imprimirCartas(Carta* lista) {
     }
 }
 
-//Función para liberar la memoria de una lista de cartas
+// Función para liberar la memoria de una lista de cartas
 void liberarCartas(Carta** lista) {
     while (*lista != NULL) {
         Carta* temp = *lista;
@@ -126,7 +126,7 @@ void liberarCartas(Carta** lista) {
     }
 }
 
-//Función para agregar una entrada al historial de la partida
+// Función para agregar una entrada al historial de la partida
 void agregarAlHistorial(HistorialEntry** historial, const char* accion) {
     HistorialEntry* nuevaEntrada = (HistorialEntry*)malloc(sizeof(HistorialEntry));
     strcpy(nuevaEntrada->accion, accion);
@@ -134,7 +134,7 @@ void agregarAlHistorial(HistorialEntry** historial, const char* accion) {
     *historial = nuevaEntrada;
 }
 
-//Función para imprimir el historial de la partida
+// Función para imprimir el historial de la partida
 void imprimirHistorial(HistorialEntry* historial) {
     printf("Historial de la partida:\n");
     while (historial != NULL) {
@@ -143,7 +143,7 @@ void imprimirHistorial(HistorialEntry* historial) {
     }
 }
 
-//Función para liberar la memoria del historial de la partida
+// Función para liberar la memoria del historial de la partida
 void liberarHistorial(HistorialEntry** historial) {
     while (*historial != NULL) {
         HistorialEntry* temp = *historial;
@@ -152,49 +152,45 @@ void liberarHistorial(HistorialEntry** historial) {
     }
 }
 
-//Función para repartir cartas al jugador y dejar el resto en la mesa
-void repartirCartas(Carta** listaTodasCartas, Carta** listaManoJugador, Carta** listaMesa){
+// Función para repartir cartas al jugador y dejar el resto en la mesa
+void repartirCartas(Carta** listaTodasCartas, Carta** listaManoJugador, Carta** listaMesa) {
     srand(time(NULL));
 
-    //Inicializar listas de manoJugador y listaMesa
     *listaManoJugador = NULL;
     *listaMesa = NULL;
 
     int numCartasDisponibles = contarCartas(*listaTodasCartas);
     int numCartasEnMano = 0;
 
-    //Darle al jugador las 15 cartas
-    while (numCartasEnMano < 15 && numCartasDisponibles > 0) {
+    if (numCartasDisponibles < 15) {
+        printf("No hay suficientes cartas disponibles para repartir.\n");
+        return;
+    }
+
+    while (numCartasEnMano < 15) {
         int cartaAleatoria = rand() % numCartasDisponibles;
         Carta* cartaElegida = obtenerCartaPorIndice(*listaTodasCartas, cartaAleatoria);
 
-        //Mover la carta elegida a la mano del jugador
-        agregarCarta(listaManoJugador, cartaElegida);
+        if (cartaElegida == NULL) {
+            // La carta elegida no es válida, sal del bucle
+            break;
+        }
 
-        //Eliminar la carta elegida de la lista de todas las cartas
+        agregarCarta(listaManoJugador, cartaElegida);
         eliminarCartaPorIndice(listaTodasCartas, cartaAleatoria);
 
         numCartasEnMano++;
-        numCartasDisponibles--;
+        numCartasDisponibles = contarCartas(*listaTodasCartas);
     }
 
-    //Permitir al jugador elegir 3 cartas de las 15 para mantener en la mano
-    printf("Seleccione 3 cartas para mantener en la mano:\n");
-    for (int i = 0; i < 3; i++) {
-        printf("Carta %d: ", i + 1);
-        int opcionCarta;
-        do {
-            scanf("%d", &opcionCarta);
-        } while (opcionCarta < 1 || opcionCarta > 15);
+    printf("Cartas repartidas al jugador:\n");
+    imprimirCartas(*listaManoJugador);
 
-        //Mover la carta seleccionada de la mano a la mesa
-        Carta* cartaSeleccionada = jugarCarta(listaManoJugador, opcionCarta);
-        agregarCarta(listaMesa, cartaSeleccionada);
-    }
-    
+    printf("Cartas restantes en la mesa:\n");
+    imprimirCartas(*listaMesa);
 }
 
-//Función para que el jugador tome una carta de la mesa
+// Función para que el jugador tome una carta de la mesa
 void tomarCartaDeMesa(Carta** listaManoJugador, Carta** listaMesa) {
     int numCartasEnMesa = contarCartas(*listaMesa);
 
@@ -215,7 +211,7 @@ void tomarCartaDeMesa(Carta** listaManoJugador, Carta** listaMesa) {
     }
 }
 
-//Función para el turno de la máquina (jugada aleatoria)
+// Función para el turno de la máquina (jugada aleatoria)
 void turnoMaquina(Carta* manoJugador, Carta** listaManoMaquina, HistorialEntry** historial) {
     int numCartasEnManoMaquina = contarCartas(*listaManoMaquina);
     if (numCartasEnManoMaquina > 0) {
@@ -233,26 +229,25 @@ int main() {
     Carta* listaCartas = NULL;
     HistorialEntry* historialPartida = NULL;
 
-    //Crear un jugador con nombre y vida
+    // Crear un jugador con nombre y vida
     Jugador jugador;
     strcpy(jugador.nombre, "Messi");
     jugador.vida = 5;
 
-     //Declarar las variables de manoJugador y manoMaquina
+    // Declarar las variables de manoJugador y manoMaquina
     Carta* manoJugador = NULL;
     Carta* manoMaquina = NULL;
 
-    //Declarar variable mesa
+    // Declarar variable mesa
     Carta* mesa = NULL;
 
-
-    //Leer las cartas desde el archivo "file.txt" y almacernarlas en una lista
     FILE* archivoCartas = fopen("file.txt", "r");
-    if(archivoCartas == NULL) {
+    if (archivoCartas == NULL) {
         printf("No se pudo abrir el archivo\n");
         return 1;
     }
 
+    // Leer las cartas desde el archivo "file.txt" y almacenarlas en una lista
     char nombre[50];
     char tipo[50];
     int vidac, ataque, defensa;
@@ -262,21 +257,20 @@ int main() {
         agregarCarta(&listaCartas, nuevaCarta);
     }
 
-    fclose(archivoCartas);
+    fclose(archivoCartas); // Cierra el archivo después de leerlo
 
     do {
-        printf("\nBienvenido a The clash of the guardians:\n");
-        printf("Escoge que deseas hacer: \n");
+        printf("\nBienvenido a The Clash of the Guardians:\n");
+        printf("Escoge qué deseas hacer:\n");
         printf("1. Crear una nueva carta\n");
-        printf("2. Jugar (Usuario vs. Maquina)\n");
+        printf("2. Jugar (Usuario vs. Máquina)\n");
         printf("3. Imprimir historial de la partida\n");
         printf("4. Salir\n");
-        scanf("%d", &opcion);    
+        scanf("%d", &opcion);
 
-        switch (opcion)
-        {
+        switch (opcion) {
             case 1:
-                //Solicitar al usuario ingresar los datos de la nueva carta
+                 //Solicitar al usuario ingresar los datos de la nueva carta
                 printf("Ingrese el nombre de la carta: ");
                 scanf(" %49s", nombre);
 
@@ -295,93 +289,109 @@ int main() {
                 //Crear la nueva carta
                 Carta* nuevaCarta = crearCarta(nombre, tipo, vidac, ataque, defensa);
 
-                //Agregar la nueva carta a la lista del file.txt
+                //Agregar la nueva carta a la lista
                 agregarCarta(&listaCartas, nuevaCarta);
-                
+
                 printf("Nueva carta creada con exito\n");
                 break;
-        
+
             case 2:
-                //Repartir cartas al jugador y dejar el resto en la mesa al inicio
+                printf("Repartiendo cartas...\n");
                 repartirCartas(&listaCartas, &manoJugador, &mesa);
 
-                printf("Comienza el juego: %s vs. Maquina\n", jugador.nombre);
+                printf("Comienza el juego: %s vs. Máquina\n", jugador.nombre);
 
-                int turno = 0; //0 para turno del jugador, 1 para turno de la máquina
+                int turno = 0; // 0 para turno del jugador, 1 para turno de la máquina
                 while (1) {
                     if (turno == 0) {
-                        //Turno del jugador
-                        printf("\nTurno de %s. Cartas en la mano:\n", jugador.nombre);
+                        printf("\n%s, es tu turno:\n", jugador.nombre);
+                        printf("Cartas en tu mano:\n");
                         imprimirCartas(manoJugador);
 
-                        //El jugador decide si toma una carta de la mesa
-                        tomarCartaDeMesa(&manoJugador, &mesa);
-
-                        //El jugador elige una carta para jugar
-                        int opcionCarta;
+                        int accion;
                         do {
-                            printf("Seleccione una carta para jugar (1-%d): ", contarCartas(manoJugador));
-                            scanf("%d", &opcionCarta);
-                        } while (opcionCarta < 1 || opcionCarta > contarCartas(manoJugador));
+                            printf("Escoge una acción:\n");
+                            printf("1. Jugar una carta\n");
+                            printf("2. Tomar una carta de la mesa\n");
+                            printf("3. Terminar turno\n");
+                            scanf("%d", &accion);
+                        } while (accion < 1 || accion > 3);
 
-                        //El jugador juega la carta seleccionada
-                        Carta* cartaJugada = jugarCarta(&manoJugador, opcionCarta);
-                        printf("%s juega la carta: %s\n", jugador.nombre, cartaJugada->nombre);
+                        if (accion == 1) {
+                            int indiceCarta;
+                            do {
+                                printf("Ingresa el número de la carta que deseas jugar: ");
+                                scanf("%d", &indiceCarta);
+                            } while (indiceCarta < 1 || indiceCarta > contarCartas(manoJugador));
 
-                        //La máquina juega su turno
-                        turnoMaquina(manoJugador, &manoMaquina, &historialPartida);
-                    } else {
-                        //Turno de la máquina
-                        printf("\nTurno de la maquina.\n");
-                        turnoMaquina(manoJugador, &manoMaquina, &historialPartida);
-                    }
-
-                    //Verificar si hay un ganador o continuar
-                    if (contarCartas(manoJugador) == 0 || contarCartas(manoMaquina) == 0) {
-                        printf("Fin del juego.\n");
-
-                        if (contarCartas(manoJugador) == 0) {
-                            printf("¡La maquina gana!\n");
-                        } else {
-                            printf("¡%s gana!\n", jugador.nombre);
+                            Carta* cartaJugada = jugarCarta(&manoJugador, indiceCarta);
+                            printf("Juegas la carta: %s\n", cartaJugada->nombre);
+                        } else if (accion == 2) {
+                            tomarCartaDeMesa(&manoJugador, &mesa);
                         }
 
-                        //Mostrar el historial de la partida
-                        imprimirHistorial(historialPartida);
+                        // Cambiar al turno de la máquina
+                        turno = 1;
+                    } else {
+                        printf("\nTurno de la Maquina:\n");
+                        turnoMaquina(manoJugador, &manoMaquina, &historialPartida);
 
-                        //Liberar memoria de las manos y el historial
-                        liberarCartas(&manoJugador);
-                        liberarCartas(&manoMaquina);
-                        liberarCartas(&mesa);
-                        liberarHistorial(&historialPartida);
-                        break;
+                        // Cambiar al turno del jugador
+                        turno = 0;
                     }
 
-                    //Cambiar el turno
-                    turno = 1 - turno;
+                    // Verificar si el juego ha terminado
+                    if (jugador.vida <= 0 || (contarCartas(manoJugador) == 0 && contarCartas(manoMaquina) == 0)) {
+                        printf("\n¡Fin del juego!\n");
+
+                        if (jugador.vida <= 0) {
+                            printf("¡Has perdido! La Maquina gana.\n");
+                        } else if (contarCartas(manoJugador) == 0 && contarCartas(manoMaquina) == 0) {
+                            printf("¡Empate! Ambos jugadores se quedaron sin cartas.\n");
+                        } else {
+                            printf("¡Has ganado! La Maquina se quedó sin cartas.\n");
+                        }
+
+                        // Imprimir el historial de la partida
+                        imprimirHistorial(historialPartida);
+
+                        // Liberar la memoria de las cartas
+                        liberarCartas(&manoJugador);
+                        liberarCartas(&manoMaquina);
+                        liberarCartas(&listaCartas);
+                        liberarCartas(&mesa);
+
+                        // Liberar la memoria del historial
+                        liberarHistorial(&historialPartida);
+
+                        // Salir del juego
+                        return 0;
+                    }
                 }
                 break;
 
             case 3:
-                //Imprimir historial
-                printf("Historial de la partida:\n");
                 imprimirHistorial(historialPartida);
                 break;
 
             case 4:
-                printf("¡Hasta pronto, %s!\n", jugador.nombre);
-                break;
-        
+                // Liberar la memoria de las cartas
+                liberarCartas(&manoJugador);
+                liberarCartas(&manoMaquina);
+                liberarCartas(&listaCartas);
+                liberarCartas(&mesa);
+
+                // Liberar la memoria del historial
+                liberarHistorial(&historialPartida);
+
+                printf("Saliendo del juego...\n");
+                return 0;
+
             default:
-                printf("Opcion no valida. Por favor, seleccione una valida\n");
+                printf("Opción no válida. Por favor, selecciona una opción válida.\n");
                 break;
-       
         }
-
-    }while(opcion != 4);
-
-    //Liberar memoria de las cartas restantes
-    liberarCartas(&listaCartas);
+    } while (opcion != 4);
 
     return 0;
 }
