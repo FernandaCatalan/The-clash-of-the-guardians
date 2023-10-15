@@ -160,7 +160,7 @@ void repartirCartas(Carta** listaTodasCartas, Carta** listaManoJugador, Carta** 
     *listaManoJugador = NULL;
     *listaMesa = NULL;
 
-    int numCartasDisponibles = contarCartas(listaTodasCartas);
+    int numCartasDisponibles = contarCartas(*listaTodasCartas);
     int numCartasEnMano = 0;
 
     //Darle al jugador las 15 cartas
