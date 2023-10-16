@@ -261,38 +261,57 @@ int main() {
 
     do {
         printf("\nBienvenido a The Clash of the Guardians:\n");
-        printf("Escoge qué deseas hacer:\n");
+        printf("Escoge que deseas hacer:\n");
         printf("1. Crear una nueva carta\n");
-        printf("2. Jugar (Usuario vs. Máquina)\n");
+        printf("2. Jugar (Usuario vs. Maquina)\n");
         printf("3. Imprimir historial de la partida\n");
         printf("4. Salir\n");
         scanf("%d", &opcion);
 
+        char nuevaNombre[50];
+        char nuevaTipo[50];
+        int nuevaVidaC, nuevaAtaque, nuevaDefensa;
+
         switch (opcion) {
-            case 1:
-                 //Solicitar al usuario ingresar los datos de la nueva carta
+            case 1: 
+                // Solicitar al usuario ingresar los datos de la nueva carta
                 printf("Ingrese el nombre de la carta: ");
-                scanf(" %49s", nombre);
+                scanf(" %49s", nuevaNombre);
 
                 printf("Ingrese el tipo de la carta: ");
-                scanf(" %49s", tipo);
+                scanf(" %49s", nuevaTipo);
 
                 printf("Ingrese los puntos de vida de la carta: ");
-                scanf("%d", &vidac);
+                scanf("%d", &nuevaVidaC);
 
                 printf("Ingrese los puntos de ataque de la carta: ");
-                scanf("%d", &ataque);
+                scanf("%d", &nuevaAtaque);
 
                 printf("Ingrese los puntos de defensa de la carta: ");
-                scanf("%d", &defensa);
+                scanf("%d", &nuevaDefensa);
 
-                //Crear la nueva carta
-                Carta* nuevaCarta = crearCarta(nombre, tipo, vidac, ataque, defensa);
-
-                //Agregar la nueva carta a la lista
+                // Crear la nueva carta
+                Carta* nuevaCarta = crearCarta(nuevaNombre, nuevaTipo, nuevaVidaC, nuevaAtaque, nuevaDefensa);
                 agregarCarta(&listaCartas, nuevaCarta);
 
-                printf("Nueva carta creada con exito\n");
+                // Abrir el archivo "file.txt" en modo de escritura (sobrescritura)
+                FILE* archivoCartas = fopen("file.txt", "w");
+                if (archivoCartas == NULL) {
+                    printf("No se pudo abrir el archivo\n");
+                    return 1;
+                }
+
+                // Escribir todas las cartas en el archivo
+                Carta* cartaActual = listaCartas;
+                while (cartaActual != NULL) {
+                    fprintf(archivoCartas, "%s,%s,%d,%d,%d\n", cartaActual->nombre, cartaActual->tipo, cartaActual->vidac, cartaActual->ataque, cartaActual->defensa);
+                    cartaActual = cartaActual->next;
+                }
+
+                // Cerrar el archivo
+                fclose(archivoCartas);
+
+                printf("Nueva carta creada con exito y guardada en el archivo.\n");
                 break;
 
             case 2:
@@ -310,7 +329,7 @@ int main() {
 
                         int accion;
                         do {
-                            printf("Escoge una acción:\n");
+                            printf("Escoge una accion:\n");
                             printf("1. Jugar una carta\n");
                             printf("2. Tomar una carta de la mesa\n");
                             printf("3. Terminar turno\n");
@@ -320,7 +339,7 @@ int main() {
                         if (accion == 1) {
                             int indiceCarta;
                             do {
-                                printf("Ingresa el número de la carta que deseas jugar: ");
+                                printf("Ingresa el numero de la carta que deseas jugar: ");
                                 scanf("%d", &indiceCarta);
                             } while (indiceCarta < 1 || indiceCarta > contarCartas(manoJugador));
 
@@ -349,7 +368,7 @@ int main() {
                         } else if (contarCartas(manoJugador) == 0 && contarCartas(manoMaquina) == 0) {
                             printf("¡Empate! Ambos jugadores se quedaron sin cartas.\n");
                         } else {
-                            printf("¡Has ganado! La Maquina se quedó sin cartas.\n");
+                            printf("¡Has ganado! La Maquina se quedo sin cartas.\n");
                         }
 
                         // Imprimir el historial de la partida
@@ -388,7 +407,7 @@ int main() {
                 return 0;
 
             default:
-                printf("Opción no válida. Por favor, selecciona una opción válida.\n");
+                printf("Opcion no valida. Por favor, selecciona una opcion valida.\n");
                 break;
         }
     } while (opcion != 4);

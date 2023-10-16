@@ -8,7 +8,8 @@ Bárbara,Mago,50,20,25
 Beidou,Vikingo,45,25,25
 Bennett,Nigromante,40,20,40
 Candace,Vikingo,45,25,35
-Charlotte,Nigromante,50,30,2O
+Charlotte,Nigromante,50,30,2
+O
 Chongyun,Nigromante,45,20,20
 Collei,Mago,50,15,30
 Cyno,Bestia,70,30,35
@@ -58,12 +59,4 @@ Shogun,Mago,55,30,20
 Tartaglia,Bestia,60,35,25
 Thoma,Vikingo,55,20,20
 Tignari,Mago,60,20,30
-
-
-
-
-
-
-
-
-
+Kuromi,Mago,50,20,15

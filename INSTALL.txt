@@ -4,4 +4,4 @@ Instrucciones para realizar la instalación del Programa.
 2. Debe clonar el repositorio en su computador.
 3. Debe abrir el archivo Proyecto1.c en el Visual Studio Code.
 4. Debe tener en la misma carpeta el archivo que tiene la información de las cartas.
-5. Debe abrir una nueva terminal y escribir "./Proyecto1".
+5. Debe abrir una nueva terminal y escribir "./Proyecto1 file.txt".
